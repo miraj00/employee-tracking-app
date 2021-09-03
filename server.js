@@ -42,13 +42,13 @@ var firstPrompt = () => {
       
        //  presents a formatted table showing dept names, dept ID
      //  viewallDept();     
-     console.log(  
-
-      db.query("SELECT * FROM department", function (err, results) {
      
-        return results;
-        })
-     );
+        db.query("SELECT * FROM department", function (results, err) {
+          console.log(results);
+          return results;
+
+        });
+   
    
       } 
 
@@ -70,7 +70,7 @@ var firstPrompt = () => {
        
         db.query("SELECT * FROM roles", function (err, results) {
           console.log(results);
-
+          return results;
        });
       }
     
