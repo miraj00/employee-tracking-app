@@ -19,6 +19,7 @@ app.use('/api', apiRoutes);
 
 
 const inquirer = require("inquirer");
+const mysql = require("mysql2");
 
 //--------------------------------------------------------------------------
 // Write code to use inquirer to gather information about the development team members,
@@ -43,7 +44,14 @@ var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
     console.log(answer);
     if (answer.choice === "View all Departments") {
-         viewallDept();            //  presents a formatted table showing dept names, dept ID
+      
+       //  presents a formatted table showing dept names, dept ID
+      viewallDept();     
+        db.query("SELECT * FROM department", function (err, results) {
+          console.log(results);
+        });
+         
+        
       } 
       else if (answer.choice === "View all Roles"){
          viewallRoles();          //  presents with job title, role id, dept that role belongs to  and salary 
