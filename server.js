@@ -58,7 +58,7 @@ var firstPrompt = () => {
       console.log(" Here is a table presenting all Roles");
        
       db.query("SELECT * FROM roles", function (err, results) {
-       console.log(err);
+  //     console.log(err);
        console.table(results);
        firstPrompt();
      });
@@ -141,9 +141,6 @@ var addDepartment = () => {
   })
 }
 
-
-
-
 // prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
 const addRolePrompt = [
   {
@@ -194,8 +191,21 @@ var addRole = () => {
   inquirer.prompt(addRolePrompt).then((answer) => {    
     console.log(answer);
 
+    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department = " + answer.department );
+ 
+  const sql = 'INSERT INTO roles (job_title, salary) VALUES(?, ?)';
+  const params = [ answer.name, answer.salary ];
+
+  db.query(sql, params, (err, result) => {
+  //  console.log(err);
+    console.table(result);
+    firstPrompt();
+    });
   })
 }
+
+
+
 
 
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
@@ -258,6 +268,16 @@ var addEmployee = () => {
   inquirer.prompt(addEmployeePrompt).then((answer) => {    
     console.log(answer);
 
+  console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Role = " + answer.role + ", Manager to Report = " + answer.managertoreport );
+ 
+  const sql = 'INSERT INTO employee (first_name, last_name, job_title) VALUES(?, ?, ?)';
+  const params = [ answer.firstname, answer.lastname, answer.role ];
+
+  db.query(sql, params, (err, result) => {
+  //  console.log(err);
+    console.table(result);
+    firstPrompt();
+    });
   })
 }
 
