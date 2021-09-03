@@ -38,48 +38,45 @@ const prompt1 = [
 var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
     console.log(answer);
+//-----------------------------------------------------------------------------------------------    
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
-     //  viewallDept();     
-     
-        db.query("SELECT * FROM department", function (results, err) {
-          console.log(results);
-          return results;
-
+         console.log(" here are all depts");
+       
+         db.query("SELECT * FROM department", function (err, results) {
+      //    console.log(err);
+          console.table(results);
+          firstPrompt();
         });
-   
-   
       } 
-
-
-//---------------------------------------------------
-
+//------------------------------------------------------------------------------------------------
       else if (answer.choice === "View all Roles"){
        
-        console.log( " HIIIIIIII ");
-              
-        // viewallRoles();          //  presents with job title, role id, dept that role belongs to  and salary 
+      //  presents with job title, role id, dept that role belongs to  and salary 
 
-        //  const sql = `SELECT roles.*, department_name AS dept_name 
-        //  FROM roles 
-        //  LEFT JOIN department ON roles.department_name = department.department_name`;
-
-        // db.query(sql, (err, rows) => {
-        // console.log( rows );
+      console.log(" Here is a table presenting all Roles");
        
-        db.query("SELECT * FROM roles", function (err, results) {
-          console.log(results);
-          return results;
-       });
-      }
-    
-  
-  
-//---------------------------------------------------
+      db.query("SELECT * FROM roles", function (err, results) {
+       console.log(err);
+       console.table(results);
+       firstPrompt();
+     });
+   } 
+//-----------------------------------------------------------------------------------------------
       else if (answer.choice === "View all Employees"){
-         viewallEmployees();      // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
-       }
+ 
+        // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
+
+         console.log(" Here is a table showing all Employees");
+       
+         db.query("SELECT * FROM employee", function (err, results) {
+          console.log(err);
+          console.table(results);
+          firstPrompt();
+        });
+   }
+//-----------------------------------------------------------------------------------------------   
       else if (answer.choice === "Add a Department"){
          addDepartment();
        }
@@ -127,10 +124,20 @@ const addDepartmentPrompt = [
     }
   }
 ] 
+
 var addDepartment = () => {
   inquirer.prompt(addDepartmentPrompt).then((answer) => {    
     console.log(answer);
+    console.log("ADDING : -- " + answer.name + " -- Department");
+ 
+  const sql = 'INSERT INTO department (department_name) VALUES(?)';
+  const params = [ answer.name ];
 
+  db.query(sql, params, (err, result) => {
+  //  console.log(err);
+    console.table(result);
+    firstPrompt();
+    });
   })
 }
 
