@@ -3,28 +3,25 @@ const express = require('express');
 const db = require('./db/connection');
 
 // Add near the top of the file
-const apiRoutes = require('./routes/apiRoutes');
+// const apiRoutes = require('./routes/apiRoutes');
 
-const PORT = process.env.PORT || 3001;
+// const PORT = process.env.PORT || 3001;
 const app = express();
 
 // Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
 
 // Add after Express middleware
 // By adding the /api prefix here, we can remove it from the
 // individual route expressions after we move them to their new home.
-app.use('/api', apiRoutes);
+// app.use('/api', apiRoutes);
 
 
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
 //--------------------------------------------------------------------------
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
 //const employees1 = [];
 // const employees = [];
 
@@ -38,24 +35,48 @@ const prompt1 = [
   }
 ];
 
-
-
 var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
     console.log(answer);
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
-      viewallDept();     
-        db.query("SELECT * FROM department", function (err, results) {
-          console.log(results);
-        });
-         
-        
+     //  viewallDept();     
+     console.log(  
+
+      db.query("SELECT * FROM department", function (err, results) {
+     
+        return results;
+        })
+     );
+   
       } 
+
+
+//---------------------------------------------------
+
       else if (answer.choice === "View all Roles"){
-         viewallRoles();          //  presents with job title, role id, dept that role belongs to  and salary 
+       
+        console.log( " HIIIIIIII ");
+              
+        // viewallRoles();          //  presents with job title, role id, dept that role belongs to  and salary 
+
+        //  const sql = `SELECT roles.*, department_name AS dept_name 
+        //  FROM roles 
+        //  LEFT JOIN department ON roles.department_name = department.department_name`;
+
+        // db.query(sql, (err, rows) => {
+        // console.log( rows );
+       
+        db.query("SELECT * FROM roles", function (err, results) {
+          console.log(results);
+
+       });
       }
+    
+  
+  
+//---------------------------------------------------
       else if (answer.choice === "View all Employees"){
          viewallEmployees();      // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
        }
@@ -274,22 +295,16 @@ var updateEmployeeRole = () => {
 }
 
 
-/*
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-  });
 
 
-// Start server after DB connection
-db.connect(err => {
-  if (err) throw err;
-  console.log('Database connected.');
+
+// // Start server after DB connection
+// db.connect(err => {
+//   if (err) throw err;
+//   console.log('Database connected.');
   
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}); 
+//   app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+//   });
+// }); 
 
-*/
