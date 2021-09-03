@@ -1,0 +1,29 @@
+{
+  "name": "employee-tracking-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^8.1.2",
+    "mysql2": "^2.3.0"
+  },
+  "devDependencies": {
+    "jest": "^27.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miraj00/employee-tracking-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/miraj00/employee-tracking-app/issues"
+  },
+  "homepage": "https://github.com/miraj00/employee-tracking-app#readme"
+}
