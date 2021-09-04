@@ -165,13 +165,30 @@ var addDepartment = () => {
   // ask which dept you want the role to enter, //    ask title, salary
 
    // 1) get all departments and insert in prompt to show as choices
-   db.query("SELECT department_name FROM department", function (err, results) {
+    db.query("SELECT department_name FROM department", function (err, results) {
     //    console.log(err);
         console.log(results);
-        console.log(results.department_name);
-       });
+
+      // nodejs mysql2 convert TextRow to plain objects  
+      var resultArray = Object.values(JSON.parse(JSON.stringify(results)))
+      console.log(resultArray); 
+    });
+
+   
+
+    //  for (var i=0; i < results.length; i ++) {
+    //    var values = results.value[i];
+    //    console.log(values); 
+    //  }   
+    //    console.log(results.department_name);
+    
 
 
+  // async function() {
+
+  //   let data = await db.query("SELECT department_name FROM department")
+  //   return 
+  // }
 
 const addRolePrompt = [
   {
@@ -179,7 +196,6 @@ const addRolePrompt = [
     name: "deptchoice",
     message: "In Which department do you want to add role to ?",
     choices: [   ]
-  
   },  
   {
     type: "text",
