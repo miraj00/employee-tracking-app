@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS manager;
 
 
+
 CREATE TABLE department (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   department_name VARCHAR(30) NOT NULL
@@ -28,7 +29,6 @@ CREATE TABLE manager (
   manager_name VARCHAR(30) NOT NULL
 );
 
-
 CREATE TABLE employee (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
@@ -40,5 +40,6 @@ CREATE TABLE employee (
   FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE,
   FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
   FOREIGN KEY (manager_id) REFERENCES manager(id) ON DELETE CASCADE
+  
 );
 

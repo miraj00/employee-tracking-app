@@ -54,8 +54,9 @@ var firstPrompt = () => {
       else if (answer.choice === "View all Employees"){
 
 
-        const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name, manager.manager_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id LEFT JOIN manager ON employee.id = manager.id';
+        const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name, manager.manager_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id LEFT JOIN manager ON employee.id = manager.manager_name';
         
+        // 
         // SELECT 
         //       employee.first_name, 
         //       employee.last_name, 
@@ -70,7 +71,7 @@ var firstPrompt = () => {
         //           employee.id = department.id 
         // LEFT JOIN manager ON 
         //           employee.id = manager.id;
-        // LEFT JOIN 
+        // 
 
         // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
 
@@ -257,8 +258,8 @@ const addEmployeePrompt = [
   },
   {
     type: "text",
-    name: "role",
-    message: "Enter Role of the Employee :",
+    name: "title",
+    message: "Enter Role / Title of the Employee :",
     validate: roleText => {
       if(roleText){
           return true;
@@ -287,14 +288,16 @@ var addEmployee = () => {
   inquirer.prompt(addEmployeePrompt).then((answer) => {    
     console.log(answer);
 
-  console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Role = " + answer.role + ", Manager to Report = " + answer.managertoreport );
+  console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Job Title = " + answer.title + ", Manager to Report = " + answer.managertoreport );
  
-  const sql = 'INSERT INTO employee (first_name, last_name, job_title) VALUES(?, ?, ?)';
-  const params = [ answer.firstname, answer.lastname, answer.role ];
+  const sql = 'INSERT INTO employee (first_name, last_name, job_title, manager_name) VALUES(?, ?, ?, ?)';
+  const params = [ answer.firstname, answer.lastname, answer.title, answer.managertoreport ];
+    console.log(params);
 
   db.query(sql, params, (err, result) => {
-  //  console.log(err);
+    console.log(err + "if any");
     console.table(result);
+    console.log( "after table");
     firstPrompt();
     });
   })
@@ -480,3 +483,22 @@ firstPrompt();
 })
 } 
 
+
+
+
+
+// DROP TABLE IF EXISTS manager;
+
+// CREATE TABLE manager (
+//   id INTEGER AUTO_INCREMENT PRIMARY KEY,
+//   manager_name VARCHAR(30) NOT NULL
+// );
+
+
+// INSERT INTO manager ( manager_name)
+// VALUES
+//   ('Miraj'),
+//   ('Rahil');
+
+// manager_id INTEGER, 
+// FOREIGN KEY (manager_id) REFERENCES manager(id) ON DELETE CASCADE
