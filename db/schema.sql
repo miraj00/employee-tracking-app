@@ -7,7 +7,6 @@ USE team;
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS employee;
-DROP TABLE IF EXISTS manager;
 
 
 
@@ -24,22 +23,15 @@ CREATE TABLE roles (
   FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
-CREATE TABLE manager (
-  id INTEGER AUTO_INCREMENT PRIMARY KEY,
-  manager_name VARCHAR(30) NOT NULL
-);
 
 CREATE TABLE employee (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
-  job_title VARCHAR(30) NOT NULL,
-  department_id INTEGER,
   role_id INTEGER,
   manager_id INTEGER, 
-  FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE,
   FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-  FOREIGN KEY (manager_id) REFERENCES manager(id) ON DELETE CASCADE
+  FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE
   
 );
 

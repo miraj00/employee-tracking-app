@@ -2,21 +2,7 @@ const express = require('express');
 
 const db = require('./db/connection');
 
-// Add near the top of the file
-// const apiRoutes = require('./routes/apiRoutes');
-
-// const PORT = process.env.PORT || 3001;
 const app = express();
-
-// Express middleware
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
-
-// Add after Express middleware
-// By adding the /api prefix here, we can remove it from the
-// individual route expressions after we move them to their new home.
-// app.use('/api', apiRoutes);
-
 
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
@@ -38,7 +24,7 @@ const prompt1 = [
 var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
     console.log(answer);
-//-----------------------------------------------------------------------------------------------    
+//--------View all departments---------------------------------------------------------------------------------------    
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
@@ -50,11 +36,37 @@ var firstPrompt = () => {
           firstPrompt();
         });
       } 
-//-----------------------------------------------------------------------------------------------
-      else if (answer.choice === "View all Employees"){
+//----- View all Roles-------------------------------------------------------------------------------------------
+else if (answer.choice === "View all Roles"){
 
+    const sql = 'SELECT roles.job_title, roles.id, roles.salary, department.department_name FROM department LEFT JOIN roles ON roles.id = department.id'; 
+   
+  // SELECT 
+  //       roles.job_title,
+  //       roles.id, 
+  //       roles.salary, 
+  //       department.department_name, 
+  // FROM roles 
+  // LEFT JOIN roles ON 
+  //       roles.id = department.id 
 
-        const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name, manager.manager_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id LEFT JOIN manager ON employee.id = manager.manager_name';
+  //  presents with job title, role id, dept that role belongs to  and salary 
+
+     console.log(" Here is a table presenting all Roles");
+
+   db.query(sql, function (err, results) {
+    //     db.query("SELECT * FROM roles", function (err, results) {
+         console.log(err);
+    console.table(results);
+    firstPrompt();
+  });
+}  
+
+//-----View all employees---------------------------------------------------------------------------------------
+
+    else if (answer.choice === "View all Employees"){
+
+      const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id';
         
         // 
         // SELECT 
@@ -79,27 +91,13 @@ var firstPrompt = () => {
        
          db.query(sql, function (err, results) {
       //    db.query("SELECT * FROM employee", function (err, results) {
-      //    console.log(err);
+          console.log(err);
           console.table(results);
 
           firstPrompt();
         });
    }
 
-//------------------------------------------------------------------------------------------------
-       else if (answer.choice === "View all Roles"){
-
-        //  presents with job title, role id, dept that role belongs to  and salary 
-  
-           console.log(" Here is a table presenting all Roles");
-  
-         db.query("SELECT * FROM roles", function (err, results) {
-         //     console.log(err);
-          console.table(results);
-          firstPrompt();
-        });
-   }  
-   
 //-----------------------------------------------------------------------------------------------   
       else if (answer.choice === "Add a Department"){
          addDepartment();
@@ -128,7 +126,7 @@ var firstPrompt = () => {
 
 firstPrompt();
  
-// prompt to enter the name of the department and that dept is added to database ----------------------------------------
+// ---- Add department ----------------------------------------
 const addDepartmentPrompt = [
   {
     type: "text",
@@ -153,7 +151,8 @@ var addDepartment = () => {
   const sql = 'INSERT INTO department (department_name) VALUES(?)';
   const params = [ answer.name ];
 
-  db.query(sql, params, (err, result) => {
+
+    db.query(sql, params, (err, result) => {
   //  console.log(err);
     console.table(result);
     firstPrompt();
@@ -161,9 +160,27 @@ var addDepartment = () => {
   })
 }
 
+// ----  Add a Role  --->>>> prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
 
-// prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
+  // ask which dept you want the role to enter, //    ask title, salary
+
+   // 1) get all departments and insert in prompt to show as choices
+   db.query("SELECT department_name FROM department", function (err, results) {
+    //    console.log(err);
+        console.log(results);
+        console.log(results.department_name);
+       });
+
+
+
 const addRolePrompt = [
+  {
+    type: "list",
+    name: "deptchoice",
+    message: "In Which department do you want to add role to ?",
+    choices: [   ]
+  
+  },  
   {
     type: "text",
     name: "name",
@@ -191,33 +208,20 @@ const addRolePrompt = [
           return true;
         }
       },
-    },  
-    {
-      type: "input",
-      name: "departmentID",
-      message: "Enter department ID you want this role to be added in :",
-      validate: (idInput) => {
-        // to make sure its a Number and no letters
-        if (isNaN(idInput)) {
-          console.log("Please Enter Department ID number (Numbers only)");
-          return false;
-        } 
-        else {
-          return true;
-        }
-      },
-    }
-
+    }  
 ] 
 
 var addRole = () => {
   inquirer.prompt(addRolePrompt).then((answer) => {    
     console.log(answer);
 
-    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.departmentID );
+//  add dept, title and salary in table 
+
+
+    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department name = " + answer.deptchoice );
  
-  const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
-  const params = [ answer.name, answer.salary, answer.departmentID ];
+  const sql = 'INSERT INTO roles (job_title, salary, department_name) VALUES(?, ?, ?)';
+  const params = [ answer.name, answer.salary, /* answer.departmentID */ ];
 
   db.query(sql, params, (err, result) => {
   //  console.log(err);
