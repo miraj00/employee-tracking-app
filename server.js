@@ -52,12 +52,32 @@ var firstPrompt = () => {
       } 
 //-----------------------------------------------------------------------------------------------
       else if (answer.choice === "View all Employees"){
- 
+
+
+        const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name, manager.manager_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id LEFT JOIN manager ON employee.id = manager.id';
+        
+        // SELECT 
+        //       employee.first_name, 
+        //       employee.last_name, 
+        //       roles.job_title, 
+        //       roles.salary, 
+        //       department.department_name, 
+        //       manager.manager_name 
+        // FROM employee 
+        // LEFT JOIN roles ON 
+        //           employee.id = roles.id 
+        // LEFT JOIN department ON 
+        //           employee.id = department.id 
+        // LEFT JOIN manager ON 
+        //           employee.id = manager.id;
+        // LEFT JOIN 
+
         // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
 
          console.log(" Here is a table showing all Employees");
        
-         db.query("SELECT * FROM employee", function (err, results) {
+         db.query(sql, function (err, results) {
+      //    db.query("SELECT * FROM employee", function (err, results) {
       //    console.log(err);
           console.table(results);
 
