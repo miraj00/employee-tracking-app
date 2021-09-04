@@ -1,12 +1,3 @@
-INSERT INTO roles (job_title, salary)
-VALUES
-  ('Sales Lead', '100000'),
-  ('Sales Person', '120000'),
-  ('Lead Engineer', '150000'),
-  ('Software Engineer', '130000'),
-  ('Accountant', '125000'),
-  ('Legal Team Lead', '250000'),
-  ('Lawyer', '190000');
 
 
 INSERT INTO department ( department_name )
@@ -14,13 +5,28 @@ VALUES
   ('Sales'),
   ('Engineering'),
   ('Finance'),
-  ('Legal');
+  ('Legal'),
+  ('Security');
 
-
-INSERT INTO employee (first_name, last_name, job_title)
+INSERT INTO roles (job_title, salary, department_id)
 VALUES
-  ('Miraj', 'Patel', 'Accountant'),
-  ('Aaron', 'Singh', 'Lawyer');
+  ('Sales Lead', '100000', '1'),
+  ('Sales Person', '120000', 1),
+  ('Lead Engineer', '150000', 2),
+  ('Software Engineer', '130000', 2),
+  ('Accountant', '125000', 3),
+  ('Legal Team Lead', '250000', 4),
+  ('Lawyer', '190000', 4);
+
+INSERT INTO manager ( manager_name)
+VALUES
+  ('Miraj'),
+  ('Rahil');
+
+INSERT INTO employee (first_name, last_name, job_title, manager_id)
+VALUES
+  ('Miraj', 'Patel', 'Accountant', 2),
+  ('Aaron', 'Singh', 'Lawyer', 2);
 
 
 

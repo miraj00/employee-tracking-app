@@ -31,7 +31,7 @@ const prompt1 = [
     name: "choice",
     message: "What would you want to do ?",
     choices: ["View all Departments", "View all Roles", "View all Employees","Add a Department", "Add a Role", "Add an Employee", "Update an Employee Role",
-     "Delete a Department", "Delete a Role ", "Delete an Employee", "Delete Everything"]
+     "Delete a Department", "Delete a Role", "Delete an Employee", "Delete Everything"]
   }
 ];
 
@@ -50,19 +50,6 @@ var firstPrompt = () => {
           firstPrompt();
         });
       } 
-//------------------------------------------------------------------------------------------------
-      else if (answer.choice === "View all Roles"){
-       
-      //  presents with job title, role id, dept that role belongs to  and salary 
-
-      console.log(" Here is a table presenting all Roles");
-       
-      db.query("SELECT * FROM roles", function (err, results) {
-  //     console.log(err);
-       console.table(results);
-       firstPrompt();
-     });
-   } 
 //-----------------------------------------------------------------------------------------------
       else if (answer.choice === "View all Employees"){
  
@@ -71,11 +58,27 @@ var firstPrompt = () => {
          console.log(" Here is a table showing all Employees");
        
          db.query("SELECT * FROM employee", function (err, results) {
-          console.log(err);
+      //    console.log(err);
           console.table(results);
+
           firstPrompt();
         });
    }
+
+//------------------------------------------------------------------------------------------------
+       else if (answer.choice === "View all Roles"){
+
+        //  presents with job title, role id, dept that role belongs to  and salary 
+  
+           console.log(" Here is a table presenting all Roles");
+  
+         db.query("SELECT * FROM roles", function (err, results) {
+         //     console.log(err);
+          console.table(results);
+          firstPrompt();
+        });
+   }  
+   
 //-----------------------------------------------------------------------------------------------   
       else if (answer.choice === "Add a Department"){
          addDepartment();
@@ -89,24 +92,20 @@ var firstPrompt = () => {
       else if (answer.choice === "Update an Employee Role"){
          updateEmployeeRole();
        }  
-      // else if (answer.choice === "Delete a Department"){
-      //    deleteDepartment();
-      //  }
-      // else if (answer.choice === "Delete a Role"){
-      //    deleteRole();
-      //  }
-      // else if (answer.choice === "Delete an Employee"){
-      //    deleteEmployee();
-      //  }
-      // else if (answer.choice === "Delete Everything"){
-      //    deleteEverything();
-      //  }
+      else if (answer.choice === "Delete a Department"){
+         deleteDepartment();
+      }
+      else if (answer.choice === "Delete a Role"){
+         deleteRole();
+       }
+      else if (answer.choice === "Delete an Employee"){
+         deleteEmployee();
+       }
      
     })    
 }
 
 firstPrompt();
-
  
 // prompt to enter the name of the department and that dept is added to database ----------------------------------------
 const addDepartmentPrompt = [
@@ -141,6 +140,7 @@ var addDepartment = () => {
   })
 }
 
+
 // prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
 const addRolePrompt = [
   {
@@ -172,18 +172,20 @@ const addRolePrompt = [
       },
     },  
     {
-      type: "text",
-      name: "department",
-      message: "What department you want this role to be added ?",
-      validate: nameText => {
-        if(nameText){
-            return true;
-        } else {
-            console.log('Please Enter Department you want this role to be added');
-            return false;
+      type: "input",
+      name: "departmentID",
+      message: "Enter department ID you want this role to be added in :",
+      validate: (idInput) => {
+        // to make sure its a Number and no letters
+        if (isNaN(idInput)) {
+          console.log("Please Enter Department ID number (Numbers only)");
+          return false;
+        } 
+        else {
+          return true;
         }
       },
-  }
+    }
 
 ] 
 
@@ -191,10 +193,10 @@ var addRole = () => {
   inquirer.prompt(addRolePrompt).then((answer) => {    
     console.log(answer);
 
-    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department = " + answer.department );
+    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.departmentID );
  
-  const sql = 'INSERT INTO roles (job_title, salary) VALUES(?, ?)';
-  const params = [ answer.name, answer.salary ];
+  const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
+  const params = [ answer.name, answer.salary, answer.departmentID ];
 
   db.query(sql, params, (err, result) => {
   //  console.log(err);
@@ -203,9 +205,6 @@ var addRole = () => {
     });
   })
 }
-
-
-
 
 
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
@@ -281,57 +280,183 @@ var addEmployee = () => {
   })
 }
 
-
-
-// prompt to select employee to update and their new role and this info is updated in the database -----------------------------
-const updateEmployeeRolePrompt = [
+// -----------  Delete Dept Function ---------------------------------------------
+const deleteDeptPrompt = [
   {
-    type: "text",
-    name: "selectEmployee",
-    message: "Select the Employee you want to update :",
-    validate: employeeText => {
-      if(employeeText){
-          return true;
-      } else {
-          console.log('Please select the Employee you want to update');
-          return false;
-      }
-    },
+  type: "input",
+  name: "idtoDelete",
+  message: "Please Enter ID number of Department you want to delete :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Please Enter ID number (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
   },
+},
+
+]  
+
+var deleteDepartment = () => {
+inquirer.prompt(deleteDeptPrompt).then((answer) => {    
+  console.log(answer);
+  console.log(answer.idtoDelete)
+
+
+const sql = `DELETE FROM department WHERE id = ?`;
+const params = [ answer.idtoDelete ];
+console.log("params =" + params);
+
+db.query(sql, params, (err, result) => {
+//  console.log(err);
+console.table(result);
+console.log("Department Deleted");
+firstPrompt();
+});
+})
+} 
+
+//-------------------Delete a Role function -----------------------------------------------
+const deleteRolePrompt = [
   {
-    type: "text",
-    name: "newRole",
-    message: "Select the New Role you want to assign to this Employee :",
-    validate: newRoleText => {
-      if(newRoleText){
-          return true;
-      } else {
-          console.log('Please select the new role you want to assign/update');
-          return false;
-      }
-    },
+  type: "input",
+  name: "roletoDelete",
+  message: "Please Enter ID number of the Role you want to delete :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Please Enter ID number of Role (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
   },
+},
 
-]
+]  
 
-var updateEmployeeRole = () => {
-  inquirer.prompt(updateEmployeeRolePrompt).then((answer) => {    
-    console.log(answer);
+var deleteRole = () => {
+inquirer.prompt(deleteRolePrompt).then((answer) => {    
+  console.log(answer);
+  console.log(answer.roletoDelete)
 
-  })
+
+const sql = `DELETE FROM roles WHERE id = ?`;
+const params = [ answer.roletoDelete ];
+console.log("params =" + params);
+
+db.query(sql, params, (err, result) => {
+//  console.log(err);
+console.table(result);
+console.log("Role Deleted");
+firstPrompt();
+});
+})
+} 
+// --------------- Delete Employee Function ---------------------------------
+const deleteEmployeePrompt = [
+  {
+  type: "input",
+  name: "employeetoDelete",
+  message: "Please Enter Employee's ID number you want to delete :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Please Enter ID number of Employee (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
+  },
+},
+
+]  
+
+var deleteEmployee = () => {
+inquirer.prompt(deleteEmployeePrompt).then((answer) => {    
+  console.log(answer);
+  console.log(answer.employeetoDelete)
+
+
+const sql = `DELETE FROM employee WHERE id = ?`;
+const params = [ answer.employeetoDelete ];
+console.log("params =" + params);
+
+db.query(sql, params, (err, result) => {
+//  console.log(err);
+console.table(result);
+console.log("Employee Deleted");
+firstPrompt();
+});
+})
+} 
+
+
+//--------Employee Updated --------------------------------------------------------------
+const updateEmployeePrompt = [
+  {
+  type: "input",
+  name: "employeetoUpdate",
+  message: "Please Enter ID number of Employee you want to Update :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Please Enter ID number of Employee you want to Update (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
+  },
+},
+{
+
+  type: "input",
+  name: "roleidtoUpdate",
+  message: "Enter the new Role ID you want to assign to this Employee :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Enter New Role ID number of Employee to Update (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
+  },
 }
 
+]  
 
 
+// UPDATE Customers
+// SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+// WHERE CustomerID = 1;
 
 
-// // Start server after DB connection
-// db.connect(err => {
-//   if (err) throw err;
-//   console.log('Database connected.');
-  
-//   app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-//   });
-// }); 
+var updateEmployeeRole = () => {
+inquirer.prompt(updateEmployeePrompt).then((answer) => {    
+  console.log(answer);
+  console.log(answer.employeetoUpdate, answer.roleidtoUpdate)
+
+
+  const sql = `UPDATE employee 
+               SET role_id = ? 
+               WHERE id = ?`;
+  const params = [ answer.roleidtoUpdate, answer.employeetoUpdate ];
+  console.log("params =" + params);
+
+  db.query(sql, params, (err, result) => {
+   //  console.log(err);
+   console.table(result);
+   console.log("Employee Role Updated");
+firstPrompt();
+});
+})
+} 
 

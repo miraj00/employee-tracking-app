@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS team;
+
+CREATE DATABASE team;
+USE team;
 
 
 DROP TABLE IF EXISTS department;
@@ -6,12 +10,10 @@ DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS manager;
 
 
-
-
 CREATE TABLE department (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
   department_name VARCHAR(30) NOT NULL
-);
+  );
 
 CREATE TABLE roles (
   id INTEGER AUTO_INCREMENT PRIMARY KEY,
