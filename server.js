@@ -8,9 +8,6 @@ const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
 //--------------------------------------------------------------------------
-//const employees1 = [];
-// const employees = [];
-
 const prompt1 = [
   {
     type: "list",
@@ -23,12 +20,12 @@ const prompt1 = [
 
 var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
-    console.log(answer);
+//    console.log(answer);
 //--------View all departments---------------------------------------------------------------------------------------    
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
-         console.log(" Here are all Departments");
+         console.log(" ==============   Here are all Departments ================");
        
          db.query("SELECT * FROM department", function (err, results) {
       //    console.log(err);
@@ -51,10 +48,10 @@ else if (answer.choice === "View all Roles"){
   
     //  presents with job title, role id, dept that role belongs to  and salary 
 
-     console.log(" Here is a table presenting all Roles");
+     console.log(" ============ Here is a table presenting all Roles ================= ");
 
    db.query(sql, function (err, results) {
-     console.log(err);
+   //  console.log(err);
      console.table(results);
     firstPrompt();
   });
@@ -81,11 +78,11 @@ else if (answer.choice === "View all Roles"){
 
         // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
 
-         console.log(" Here is a table showing all Employees");
+         console.log(" ========  Here is a table showing all Employees =========== ");
        
          db.query(sql, function (err, results) {
       //    db.query("SELECT * FROM employee", function (err, results) {
-          console.log(err);
+      //    console.log(err);
           console.table(results);
 
           firstPrompt();
@@ -94,10 +91,10 @@ else if (answer.choice === "View all Roles"){
 //--------View all Managers---------------------------------------------------------------------------------------    
       else if (answer.choice === "View Managers") {
          
-        console.log(" Here is a list of Managers");
+        console.log(" ===============  Here is a list of Managers =============== ");
   
         db.query("SELECT id, manager AS Assigned_Manager FROM employee", function (err, results) {
-           console.log(err);
+        //   console.log(err);
          console.table(results);
          firstPrompt();
         });
@@ -158,16 +155,16 @@ const addDepartmentPrompt = [
 
 var addDepartment = () => {
   inquirer.prompt(addDepartmentPrompt).then((answer) => {    
-    console.log(answer);
-    console.log("ADDING : -- " + answer.name + " -- Department");
- 
+ //   console.log(answer);
+ //   console.log("ADDING : -- " + answer.name + " -- Department");
+ console.log(" ========   Department Added ======== ");
   const sql = 'INSERT INTO department (department_name) VALUES(?)';
   const params = [ answer.name ];
 
 
     db.query(sql, params, (err, result) => {
   //  console.log(err);
-    console.table(result);
+  //   console.table(result);
     firstPrompt();
     });
   })
@@ -178,14 +175,14 @@ var addRole = () => {
     
 db.promise().query('SELECT department.department_name, department.id FROM department')
   .then(([rows]) => {
-    console.log(rows);
-//----------
+ //   console.log(rows);
+//-------------
     var departments = rows.map(({department_name, id}) => ({
       name: department_name,
       value: id
       
   }));
-  console.log(departments);
+ // console.log(departments);
 //-------------
 
     inquirer.prompt(
@@ -227,15 +224,15 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
     ] )
       .then(answer => {
       
-    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.deptchoice );
- 
+  //  console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.deptchoice );
+  console.log(" ========   Role Added ======== ");
   const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
   const params = [ answer.name, answer.salary, answer.deptchoice ];
-  console.log (params);
+  // console.log (params);
 
   db.query(sql, params, (err, result) => {
   //  console.log(err);
-    console.table(result);
+  //  console.table(result);
    firstPrompt();
   
   });
@@ -248,7 +245,7 @@ var addEmployee  = () => {
     
   db.promise().query('SELECT roles.roleid, roles.job_title FROM roles')
     .then(([rows]) => {
-      console.log(rows);
+    //  console.log(rows);
   //----------
       var allRoles = rows.map(({job_title, roleid}) => ({
         name: job_title,
@@ -295,15 +292,15 @@ var addEmployee  = () => {
       ] )
         .then(answer => {
         
-      console.log("ADDING : First Name = " + answer.firstname + ", Last Name =  " + answer.lastname + ", Role = " + answer.rolechoice );
-   
+    //  console.log("ADDING : First Name = " + answer.firstname + ", Last Name =  " + answer.lastname + ", Role = " + answer.rolechoice );
+     console.log(" ========   Employee Added ======== ");
     const sql = 'INSERT INTO employee (first_name, last_name, role_id) VALUES(?, ?, ?)';
     const params = [ answer.firstname, answer.lastname, answer.rolechoice ];
-    console.log (params);
+    // console.log (params);
   
     db.query(sql, params, (err, result) => {
     //  console.log(err);
-      console.table(result);
+    //  console.table(result);
      firstPrompt();
     
     });
@@ -333,18 +330,18 @@ const deleteDeptPrompt = [
 
 var deleteDepartment = () => {
 inquirer.prompt(deleteDeptPrompt).then((answer) => {    
-  console.log(answer);
-  console.log(answer.idtoDelete)
+ // console.log(answer);
+ // console.log(answer.idtoDelete);
 
 
 const sql = `DELETE FROM department WHERE id = ?`;
 const params = [ answer.idtoDelete ];
-console.log("params =" + params);
+// console.log("params =" + params);
 
 db.query(sql, params, (err, result) => {
 //  console.log(err);
-console.table(result);
-console.log("Department Deleted");
+// console.table(result);
+console.log(" =====  Department Deleted =========");
 firstPrompt();
 });
 })
@@ -371,18 +368,18 @@ const deleteManagerPrompt = [
 
 var deleteManager = () => {
 inquirer.prompt(deleteManagerPrompt).then((answer) => {    
-  console.log(answer);
-  console.log(answer.idtoDelete)
+ // console.log(answer);
+ // console.log(answer.idtoDelete)
 
 
 const sql = `DELETE FROM employee WHERE id = ?`;
 const params = [ answer.idtoDelete ];
-console.log("params =" + params);
+// console.log("params =" + params);
 
 db.query(sql, params, (err, result) => {
-  console.log(err);
-console.table(result);
-console.log("Manager Deleted");
+ // console.log(err);
+// console.table(result);
+console.log(" ========  Manager Deleted  ===========");
 firstPrompt();
 });
 })
@@ -410,18 +407,18 @@ const deleteRolePrompt = [
 
 var deleteRole = () => {
 inquirer.prompt(deleteRolePrompt).then((answer) => {    
-  console.log(answer);
-  console.log(answer.roletoDelete)
+ // console.log(answer);
+ // console.log(answer.roletoDelete);
 
 
-const sql = `DELETE FROM roles WHERE id = ?`;
+const sql = `DELETE FROM roles WHERE roleid = ?`;
 const params = [ answer.roletoDelete ];
-console.log("params =" + params);
+ // console.log("params =" + params);
 
 db.query(sql, params, (err, result) => {
-//  console.log(err);
-console.table(result);
-console.log("Role Deleted");
+  // console.log(err);
+// console.table(result);
+console.log(" =========   Role Deleted =========== ");
 firstPrompt();
 });
 })
@@ -448,18 +445,18 @@ const deleteEmployeePrompt = [
 
 var deleteEmployee = () => {
 inquirer.prompt(deleteEmployeePrompt).then((answer) => {    
-  console.log(answer);
-  console.log(answer.employeetoDelete)
+ // console.log(answer);
+ // console.log(answer.employeetoDelete);
 
 
 const sql = `DELETE FROM employee WHERE id = ?`;
 const params = [ answer.employeetoDelete ];
-console.log("params =" + params);
+// console.log("params =" + params);
 
 db.query(sql, params, (err, result) => {
 //  console.log(err);
-console.table(result);
-console.log("Employee Deleted");
+// console.table(result);
+console.log(" ======= Employee Deleted ========== ");
 firstPrompt();
 });
 })
@@ -470,7 +467,7 @@ var updateEmployeeRole  = () => {
   
   db.promise().query('select * from employee')
    .then(([rows]) => {
-    console.log(rows);
+    // console.log(rows);
 
      var employee = rows.map(({ first_name, id }) => ({
          name: first_name,
@@ -480,7 +477,7 @@ var updateEmployeeRole  = () => {
   db.promise().query('select * from roles')
      
      .then(([rows]) => {
-      console.log(rows);
+     // console.log(rows);
     
      var newRole = rows.map(({ roleid, job_title }) => ({
       name: job_title,
@@ -507,15 +504,15 @@ var updateEmployeeRole  = () => {
 
       .then(answer => {
         
-  console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
-   
+   //  console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
+       console.log (" ======= Updated Employee Role ========== ");
     const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
     const params = [ answer.rolechoice, answer.employeechoice ];
-    console.log (params);
+    // console.log (params);
   
     db.query(sql, params, (err, result) => {
     //  console.log(err);
-      console.table(result);
+     //  console.table(result);
      firstPrompt();
     
         });
@@ -525,14 +522,12 @@ var updateEmployeeRole  = () => {
 }
 
 //---------UPDATE  EMPLOYEE'S MANAGER--------------------------------------------------------------------------------------------------
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 var updateEmployeeManager  = () => {
 
 
   db.promise().query('select * from employee')
    .then(([rows]) => {
-    console.log(rows);
+    // console.log(rows);
 
      var employee = rows.map(({ first_name, id }) => ({
          name: first_name,
@@ -544,7 +539,7 @@ var updateEmployeeManager  = () => {
   db.promise().query('select * from employee')
      
      .then(([rows]) => {
-      console.log(rows);
+     //  console.log(rows);
     
      var newManager = rows.map(({ first_name, id }) => ({
       name: first_name,
@@ -571,15 +566,15 @@ var updateEmployeeManager  = () => {
 
       .then(answer => {
         
-  console.log("ADDING : to Employee = " + answer.employeechoice + ", New manager =  " + answer.managerchoice );
-   
+  // console.log("ADDING : to Employee = " + answer.employeechoice + ", New manager =  " + answer.managerchoice );
+     console.log(" ======== Updated Employee's Manager ============= ")
     const sql = 'UPDATE employee SET manager = ? WHERE id = ?';
     const params = [ answer.managerchoice, answer.employeechoice ];
-    console.log (params);
+    // console.log (params);
   
     db.query(sql, params, (err, result) => {
     //  console.log(err);
-      console.table(result);
+    //  console.table(result);
      firstPrompt();
     
     });
