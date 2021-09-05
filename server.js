@@ -16,8 +16,8 @@ const prompt1 = [
     type: "list",
     name: "choice",
     message: "What would you want to do ?",
-    choices: ["View all Departments", "View all Roles", "View all Employees", "View Managers","Add a Department", "Add a Role", "Add an Employee", "Update an Employee Role",
-     "Delete a Department", "Delete a Role", "Delete an Employee", "Exit"]
+    choices: ["View all Departments", "View all Roles", "View all Employees", "View Managers","Add a Department", "Add a Role", "Add an Employee", "Update an Employee Role", "Update an Employee's Manager",
+     "Delete a Department", "Delete a Role", "Delete an Employee", "Delete a Manager", "Exit"]
   }
 ];
 
@@ -96,7 +96,7 @@ else if (answer.choice === "View all Roles"){
          
         console.log(" Here is a list of Managers");
   
-        db.query("SELECT first_name, last_name, manager AS Assigned_Manager FROM employee", function (err, results) {
+        db.query("SELECT id, manager AS Assigned_Manager FROM employee", function (err, results) {
            console.log(err);
          console.table(results);
          firstPrompt();
@@ -104,28 +104,34 @@ else if (answer.choice === "View all Roles"){
        } 
 
 //-----------------------------------------------------------------------------------------------   
-      else if (answer.choice === "Add a Department"){    // done
+      else if (answer.choice === "Add a Department"){    
          addDepartment();
        }
-      else if (answer.choice === "Add a Role"){          //done
+      else if (answer.choice === "Add a Role"){          
          addRole();
        }
-      else if (answer.choice === "Add an Employee"){        // done
+      else if (answer.choice === "Add an Employee"){     
          addEmployee();
        }
-      else if (answer.choice === "Update an Employee Role"){
+      else if (answer.choice === "Update an Employee Role"){    
          updateEmployeeRole();
        }  
-      else if (answer.choice === "Delete a Department"){      //done
+       else if (answer.choice === "Update an Employee's Manager"){    
+       updateEmployeeManager();
+       }
+       else if (answer.choice === "Delete a Department"){      
          deleteDepartment();
       }
-      else if (answer.choice === "Delete a Role"){           //done
+      else if (answer.choice === "Delete a Role"){           
          deleteRole();
        }
-      else if (answer.choice === "Delete an Employee"){      //done
+      else if (answer.choice === "Delete an Employee"){      
          deleteEmployee();
        }
-      else if ( answer.choice === "Exit"){                //done
+       else if (answer.choice === "Delete a Manager"){      
+        deleteManager();
+     }
+      else if ( answer.choice === "Exit"){                
         db.end();
       }
     })    
@@ -343,6 +349,44 @@ firstPrompt();
 });
 })
 } 
+//-----------------  Delete a Manager --------------------------------------------------------
+const deleteManagerPrompt = [
+  {
+  type: "input",
+  name: "idtoDelete",
+  message: "Please Enter ID number of Manager you want to delete :",
+  validate: (idInput) => {
+    // to make sure its a Number and no letters
+    if (isNaN(idInput)) {
+      console.log("Please Enter ID number (Numbers only)");
+      return false;
+    } 
+    else {
+      return true;
+    }
+  },
+},
+
+]  
+
+var deleteManager = () => {
+inquirer.prompt(deleteManagerPrompt).then((answer) => {    
+  console.log(answer);
+  console.log(answer.idtoDelete)
+
+
+const sql = `DELETE FROM employee WHERE id = ?`;
+const params = [ answer.idtoDelete ];
+console.log("params =" + params);
+
+db.query(sql, params, (err, result) => {
+  console.log(err);
+console.table(result);
+console.log("Manager Deleted");
+firstPrompt();
+});
+})
+} 
 
 //-------------------Delete a Role function -----------------------------------------------
 const deleteRolePrompt = [
@@ -421,8 +465,7 @@ firstPrompt();
 })
 } 
 
-//--------Employee Updated --------------------------------------------------------------
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//--------Update Employee Role  ------------------------------------------------------------------------------
 var updateEmployeeRole  = () => {
   
   db.promise().query('select * from employee')
@@ -433,9 +476,6 @@ var updateEmployeeRole  = () => {
          name: first_name,
          value: id    
        }));
-
-      
-
 
   db.promise().query('select * from roles')
      
@@ -478,6 +518,70 @@ var updateEmployeeRole  = () => {
       console.table(result);
      firstPrompt();
     
+        });
+      })
+    })
+  })
+}
+
+//---------UPDATE  EMPLOYEE'S MANAGER--------------------------------------------------------------------------------------------------
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+var updateEmployeeManager  = () => {
+
+
+  db.promise().query('select * from employee')
+   .then(([rows]) => {
+    console.log(rows);
+
+     var employee = rows.map(({ first_name, id }) => ({
+         name: first_name,
+         value: id    
+       }));
+
+  
+  
+  db.promise().query('select * from employee')
+     
+     .then(([rows]) => {
+      console.log(rows);
+    
+     var newManager = rows.map(({ first_name, id }) => ({
+      name: first_name,
+      value: first_name
+      }));   
+    
+      
+  inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "employeechoice",
+          message: "SELECT the Employee you want to update Manager for :",
+          choices: employee
+        },
+        {
+          type: "list",
+          name: "managerchoice",
+          message: "SELECT the New Manager of the Employee from this list :",
+          choices: newManager
+        }
+      ] )
+
+
+      .then(answer => {
+        
+  console.log("ADDING : to Employee = " + answer.employeechoice + ", New manager =  " + answer.managerchoice );
+   
+    const sql = 'UPDATE employee SET manager = ? WHERE id = ?';
+    const params = [ answer.managerchoice, answer.employeechoice ];
+    console.log (params);
+  
+    db.query(sql, params, (err, result) => {
+    //  console.log(err);
+      console.table(result);
+     firstPrompt();
+    
     });
   })
 })
@@ -485,6 +589,3 @@ var updateEmployeeRole  = () => {
 })
 
 }
-
-
-
