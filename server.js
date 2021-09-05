@@ -174,64 +174,60 @@ var addDepartment = () => {
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 
 
-  var deptQuery =  db.query('SELECT department.department_name, department.id FROM department', (err, result) => {
-        console.log(err);
-        console.table(result);
-        console.log(result);
-       var result2 =  result.map(({name, id}) => ({ name: name, value: id }));
-        console.log(result2 + " : result2 is here");
-        
-       });
-   
-
-
-const addRolePrompt = [
-  {
-    type: "list",
-    name: "deptchoice",
-    message: "In Which department do you want to add role to ?",
-    choices: deptQuery
-  },  
-  {
-    type: "text",
-    name: "name",
-    message: "What is the Role you want to add?",
-    validate: nameText => {
-      if(nameText){
-          return true;
-      } else {
-          console.log('Please Enter Department Name you want to add');
-          return false;
-      }
-    },
-  },
-    {
-      type: "input",
-      name: "salary",
-      message: "Please Enter salary for this Role :",
-      validate: (salaryInput) => {
-        // to make sure its a Number and no letters
-        if (isNaN(salaryInput)) {
-          console.log("Please Enter Salary (Numbers only)");
-          return false;
-        } 
-        else {
-          return true;
-        }
-      },
-    }  
-] 
-
 var addRole = () => {
     
+db.promise().query('SELECT department.department_name, department.id FROM department')
+  .then(([rows]) => {
+    console.log(rows);
+//----------
+    var departments = rows.map(({department_name, id}) => ({
+      name: department_name,
+      value: id
+      
+  }));
+  console.log(departments);
+//-------------
 
-  inquirer.prompt(addRolePrompt).then((answer) => {    
-    console.log(answer);
-
-//  add dept, title and salary in table 
-
-
-    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department name = " + answer.deptchoice );
+    inquirer.prompt(
+    [
+      {
+        type: "list",
+        name: "deptchoice",
+        message: "Select department Name you want to add role to :",
+        choices: departments
+      },  
+      {
+        type: "text",
+        name: "name",
+        message: "What is the New Role you want to add?",
+        validate: nameText => {
+          if(nameText){
+              return true;
+          } else {
+              console.log('Please Enter Department Name you want to add');
+              return false;
+          }
+        },
+      },
+        {
+          type: "input",
+          name: "salary",
+          message: "Please Enter Salary for this New Role :",
+          validate: (salaryInput) => {
+            // to make sure its a Number and no letters
+            if (isNaN(salaryInput)) {
+              console.log("Please Enter Salary (Numbers only)");
+              return false;
+            } 
+            else {
+              return true;
+            }
+          },
+        }  
+    ] )
+      .then(answer => {
+      
+    console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.deptchoice );
  
   const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
   const params = [ answer.name, answer.salary, answer.deptchoice ];
@@ -243,7 +239,9 @@ var addRole = () => {
     firstPrompt();
     });
   })
+})
 }
+
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
