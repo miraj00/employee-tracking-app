@@ -16,8 +16,8 @@ const prompt1 = [
     type: "list",
     name: "choice",
     message: "What would you want to do ?",
-    choices: ["View all Departments", "View all Roles", "View all Employees","Add a Department", "Add a Role", "Add an Employee", "Update an Employee Role",
-     "Delete a Department", "Delete a Role", "Delete an Employee", "Delete Everything"]
+    choices: ["View all Departments", "View all Roles", "View all Employees", "View Managers","Add a Department", "Add a Role", "Add an Employee", "Update an Employee Role",
+     "Delete a Department", "Delete a Role", "Delete an Employee", "Exit"]
   }
 ];
 
@@ -28,7 +28,7 @@ var firstPrompt = () => {
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
-         console.log(" here are all depts");
+         console.log(" here are all Departments");
        
          db.query("SELECT * FROM department", function (err, results) {
       //    console.log(err);
@@ -66,24 +66,20 @@ else if (answer.choice === "View all Roles"){
 
     else if (answer.choice === "View all Employees"){
 
-      const sql = 'SELECT employee.first_name, employee.last_name, roles.job_title, roles.salary, department.department_name FROM employee LEFT JOIN roles ON employee.id = roles.id LEFT JOIN department ON employee.id = department.id';
+      const sql = 'SELECT employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, employee.manager AS Manager_Name, roles.job_title AS Title, roles.salary AS Salary, department.department_name AS Department FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id';
         
-        // 
-        // SELECT 
-        //       employee.first_name, 
-        //       employee.last_name, 
-        //       roles.job_title, 
-        //       roles.salary, 
-        //       department.department_name, 
-        //       manager.manager_name 
-        // FROM employee 
-        // LEFT JOIN roles ON 
-        //           employee.id = roles.id 
-        // LEFT JOIN department ON 
-        //           employee.id = department.id 
-        // LEFT JOIN manager ON 
-        //           employee.id = manager.id;
-        // 
+      // SELECT 
+      // employee.id AS ID,
+      // employee.first_name AS First_Name,
+      // employee.last_name AS Last_Name,
+      // employee.manager AS Manager_Name,
+      // roles.job_title AS Title, 
+      // roles.salary AS Salary,
+      // department.department_name AS Department
+      // FROM employee
+      // LEFT JOIN roles ON employee.role_id = roles.id
+      // LEFT JOIN department ON roles.department_id = department.id
+
 
         // presents a formatted table with employee data including ID, first and last name, job title, dept, salaries, and manager that employee report to 
 
@@ -96,10 +92,21 @@ else if (answer.choice === "View all Roles"){
 
           firstPrompt();
         });
-   }
+       }
+//--------View all Managers---------------------------------------------------------------------------------------    
+      else if (answer.choice === "View Managers") {
+         
+        console.log(" Here is a list of Managers");
+  
+        db.query("SELECT first_name, last_name, manager AS Assigned_Manager FROM employee", function (err, results) {
+           console.log(err);
+         console.table(results);
+         firstPrompt();
+        });
+       } 
 
 //-----------------------------------------------------------------------------------------------   
-      else if (answer.choice === "Add a Department"){
+      else if (answer.choice === "Add a Department"){    // done
          addDepartment();
        }
       else if (answer.choice === "Add a Role"){
@@ -111,7 +118,7 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Update an Employee Role"){
          updateEmployeeRole();
        }  
-      else if (answer.choice === "Delete a Department"){
+      else if (answer.choice === "Delete a Department"){      //done
          deleteDepartment();
       }
       else if (answer.choice === "Delete a Role"){
@@ -120,7 +127,9 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Delete an Employee"){
          deleteEmployee();
        }
-     
+      else if ( answer.choice === "Exit"){
+        db.end();
+      }
     })    
 }
 
@@ -162,40 +171,26 @@ var addDepartment = () => {
 
 // ----  Add a Role  --->>>> prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
 
-  // ask which dept you want the role to enter, //    ask title, salary
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 
-   // 1) get all departments and insert in prompt to show as choices
-    db.query("SELECT department_name FROM department", function (err, results) {
-    //    console.log(err);
-        console.log(results);
 
-      // nodejs mysql2 convert TextRow to plain objects  
-      var resultArray = Object.values(JSON.parse(JSON.stringify(results)))
-      console.log(resultArray); 
-    });
-
+  var deptQuery =  db.query('SELECT department.department_name, department.id FROM department', (err, result) => {
+        console.log(err);
+        console.table(result);
+        console.log(result);
+       var result2 =  result.map(({name, id}) => ({ name: name, value: id }));
+        console.log(result2 + " : result2 is here");
+        
+       });
    
 
-    //  for (var i=0; i < results.length; i ++) {
-    //    var values = results.value[i];
-    //    console.log(values); 
-    //  }   
-    //    console.log(results.department_name);
-    
-
-
-  // async function() {
-
-  //   let data = await db.query("SELECT department_name FROM department")
-  //   return 
-  // }
 
 const addRolePrompt = [
   {
     type: "list",
     name: "deptchoice",
     message: "In Which department do you want to add role to ?",
-    choices: [   ]
+    choices: deptQuery
   },  
   {
     type: "text",
@@ -228,6 +223,8 @@ const addRolePrompt = [
 ] 
 
 var addRole = () => {
+    
+
   inquirer.prompt(addRolePrompt).then((answer) => {    
     console.log(answer);
 
@@ -236,17 +233,19 @@ var addRole = () => {
 
     console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department name = " + answer.deptchoice );
  
-  const sql = 'INSERT INTO roles (job_title, salary, department_name) VALUES(?, ?, ?)';
-  const params = [ answer.name, answer.salary, /* answer.departmentID */ ];
+  const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
+  const params = [ answer.name, answer.salary, answer.deptchoice ];
+  console.log (params);
 
   db.query(sql, params, (err, result) => {
-  //  console.log(err);
+    console.log(err);
     console.table(result);
     firstPrompt();
     });
   })
 }
 
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
 const addEmployeePrompt = [

@@ -8,21 +8,21 @@ VALUES
   ('Legal'),
   ('Security');
 
-INSERT INTO roles (job_title, salary)
+INSERT INTO roles (job_title, salary, department_id)
 VALUES
-  ('Sales Lead', '100000'),
-  ('Sales Person', '120000'),
-  ('Lead Engineer', '150000'),
-  ('Software Engineer', '130000'),
-  ('Accountant', '125000'),
-  ('Legal Team Lead', '250000'),
-  ('Lawyer', '190000');
+  ('Sales Lead', '100000', 1),
+  ('Sales Person', '120000', 1),
+  ('Lead Engineer', '150000', 2),
+  ('Software Engineer', '130000', 2),
+  ('Accountant', '125000', 3),
+  ('Legal Team Lead', '250000', 4),
+  ('Lawyer', '190000', 4),
+  ('Guard', '90000', 5);
 
-
-INSERT INTO employee (first_name, last_name)
+INSERT INTO employee (first_name, last_name, role_id, manager)
 VALUES
-  ('Miraj', 'Patel'),
-  ('Aaron', 'Singh');
+  ('Miraj', 'Patel', 3, 'Jimmy Butler'),
+  ('Aaron', 'Singh', 2, 'Rick Kuvo');
 
 
 
