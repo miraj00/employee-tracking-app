@@ -28,7 +28,7 @@ var firstPrompt = () => {
     if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
-         console.log(" here are all Departments");
+         console.log(" Here are all Departments");
        
          db.query("SELECT * FROM department", function (err, results) {
       //    console.log(err);
@@ -47,8 +47,7 @@ else if (answer.choice === "View all Roles"){
     //      roles.salary, 
     //      department.department_name 
     // FROM roles 
-    // LEFT JOIN department ON 
-    // roles.department_id = department.id';
+    // LEFT JOIN department ON roles.department_id = department.id';
   
     //  presents with job title, role id, dept that role belongs to  and salary 
 
@@ -426,8 +425,19 @@ firstPrompt();
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 var updateEmployeeRole  = () => {
     
-  db.promise().query('SELECT employee.first_name, employee.id, roles.roleid, roles.job_title FROM employee LEFT JOIN roles ON employee.role_id = roles.roleid')
+  db.promise().query('SELECT employee.first_name, employee.id, roles.roleid, roles.job_title FROM employee LEFT JOIN roles ON employee.id = roles.roleid')
    
+
+
+        // SELECT 
+        // employee.first_name, 
+        // employee.id, 
+        // roles.roleid, 
+        // roles.job_title 
+        // FROM employee 
+        // LEFT JOIN roles ON employee.id = roles.roleid
+
+
   .then(([rows]) => {
       console.log(rows);
   //----------
