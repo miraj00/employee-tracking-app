@@ -424,32 +424,30 @@ firstPrompt();
 //--------Employee Updated --------------------------------------------------------------
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 var updateEmployeeRole  = () => {
-    
-  db.promise().query('SELECT employee.first_name, employee.id, roles.roleid, roles.job_title FROM employee LEFT JOIN roles ON employee.id = roles.roleid')
-   
-
-
-        // SELECT 
-        // employee.first_name, 
-        // employee.id, 
-        // roles.roleid, 
-        // roles.job_title 
-        // FROM employee 
-        // LEFT JOIN roles ON employee.id = roles.roleid
-
-
-  .then(([rows]) => {
-      console.log(rows);
-  //----------
-       var employee = rows.map(({ first_name, id }) => ({
-           name: first_name,
-           value: id    
-       }));
-       var newRole = rows.map(({ roleid, job_title }) => ({
-           name: job_title,
-           value: roleid
-       }));
   
+  db.promise().query('select * from employee')
+   .then(([rows]) => {
+    console.log(rows);
+
+     var employee = rows.map(({ first_name, id }) => ({
+         name: first_name,
+         value: id    
+       }));
+
+      
+
+
+  db.promise().query('select * from roles')
+     
+     .then(([rows]) => {
+      console.log(rows);
+    
+     var newRole = rows.map(({ roleid, job_title }) => ({
+      name: job_title,
+      value: roleid
+      }));   
+    
+      
   inquirer.prompt(
       [
         {
@@ -472,7 +470,7 @@ var updateEmployeeRole  = () => {
   console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
    
     const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
-    const params = [ answer.employeechoice, answer.rolechoice ];
+    const params = [ answer.rolechoice, answer.employeechoice ];
     console.log (params);
   
     db.query(sql, params, (err, result) => {
@@ -481,10 +479,12 @@ var updateEmployeeRole  = () => {
      firstPrompt();
     
     });
-    })
   })
-  }
+})
+
+})
+
+}
 
 
 
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
