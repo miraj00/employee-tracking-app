@@ -39,11 +39,11 @@ var firstPrompt = () => {
 //----- View all Roles-------------------------------------------------------------------------------------------
 else if (answer.choice === "View all Roles"){
 
-    const sql = 'SELECT roles.job_title, roles.id, roles.salary, department.department_name FROM roles LEFT JOIN department on roles.department_id = department.id'; 
+    const sql = 'SELECT roles.job_title, roles.roleid, roles.salary, department.department_name FROM roles LEFT JOIN department on roles.department_id = department.id'; 
 
     // 'SELECT 
     //      roles.job_title, 
-    //      roles.id, 
+    //      roles.roleid, 
     //      roles.salary, 
     //      department.department_name 
     // FROM roles 
@@ -65,7 +65,7 @@ else if (answer.choice === "View all Roles"){
 
     else if (answer.choice === "View all Employees"){
 
-      const sql = 'SELECT employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, employee.manager AS Manager_Name, roles.job_title AS Title, roles.salary AS Salary, department.department_name AS Department FROM employee LEFT JOIN roles ON employee.role_id = roles.id LEFT JOIN department ON roles.department_id = department.id';
+      const sql = 'SELECT employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, employee.manager AS Manager_Name, roles.job_title AS Title, roles.salary AS Salary, department.department_name AS Department FROM employee LEFT JOIN roles ON employee.role_id = roles.roleid LEFT JOIN department ON roles.department_id = department.id';
         
       // SELECT 
       // employee.id AS ID,
@@ -76,7 +76,7 @@ else if (answer.choice === "View all Roles"){
       // roles.salary AS Salary,
       // department.department_name AS Department
       // FROM employee
-      // LEFT JOIN roles ON employee.role_id = roles.id
+      // LEFT JOIN roles ON employee.role_id = roles.roleid
       // LEFT JOIN department ON roles.department_id = department.id
 
 
@@ -111,7 +111,7 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Add a Role"){          //done
          addRole();
        }
-      else if (answer.choice === "Add an Employee"){
+      else if (answer.choice === "Add an Employee"){        // done
          addEmployee();
        }
       else if (answer.choice === "Update an Employee Role"){
@@ -123,7 +123,7 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Delete a Role"){           //done
          deleteRole();
        }
-      else if (answer.choice === "Delete an Employee"){      
+      else if (answer.choice === "Delete an Employee"){      //done
          deleteEmployee();
        }
       else if ( answer.choice === "Exit"){                //done
@@ -237,19 +237,17 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
   })
 })
 }
-
+//--------------- Add Employee -----------------------------------------------
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 var addEmployee  = () => {
     
-  db.promise().query('SELECT roles.id, roles.job_title FROM roles')
+  db.promise().query('SELECT roles.roleid, roles.job_title FROM roles')
     .then(([rows]) => {
       console.log(rows);
   //----------
-      var allRoles = rows.map(({job_title, id}) => ({
+      var allRoles = rows.map(({job_title, roleid}) => ({
         name: job_title,
-        value: id
+        value: roleid
         
     }));
    // console.log(allRoles);
@@ -307,84 +305,7 @@ var addEmployee  = () => {
     })
   })
   }
-
-
-
-// //////////////////////////////////////////////////////////////////////////////////
-// const addEmployeePrompt = [
-//   {
-//     type: "text",
-//     name: "firstname",
-//     message: "Enter First Name of the Employee :",
-//     validate: firstnameText => {
-//       if(firstnameText){
-//           return true;
-//       } else {
-//           console.log('Please Enter First Name of the Employee');
-//           return false;
-//       }
-//     },
-//   },
-//   {
-//     type: "text",
-//     name: "lastname",
-//     message: "Enter Last Name of the Employee :",
-//     validate: lastnameText => {
-//       if(lastnameText){
-//           return true;
-//       } else {
-//           console.log('Please Enter Last Name of the Employee');
-//           return false;
-//       }
-//     },
-//   },
-//   {
-//     type: "text",
-//     name: "title",
-//     message: "Enter Role / Title of the Employee :",
-//     validate: roleText => {
-//       if(roleText){
-//           return true;
-//       } else {
-//           console.log('Please Enter Role of the Employee');
-//           return false;
-//       }
-//     },
-//   },
-//   {
-//     type: "text",
-//     name: "managertoreport",
-//     message: "Enter manager name that Employee report to :",
-//     validate: managerText => {
-//       if(managerText){
-//           return true;
-//       } else {
-//           console.log('Please Enter Manager name that Employee report to');
-//           return false;
-//       }
-//     },
-//   },
-// ]
-
-// var addEmployee = () => {
-//   inquirer.prompt(addEmployeePrompt).then((answer) => {    
-//     console.log(answer);
-
-//   console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Job Title = " + answer.title + ", Manager to Report = " + answer.managertoreport );
- 
-//   const sql = 'INSERT INTO employee (first_name, last_name, job_title, manager_name) VALUES(?, ?, ?, ?)';
-//   const params = [ answer.firstname, answer.lastname, answer.title, answer.managertoreport ];
-//     console.log(params);
-
-//   db.query(sql, params, (err, result) => {
-//     console.log(err + "if any");
-//     console.table(result);
-//     console.log( "after table");
-//     firstPrompt();
-//     });
-//   })
-// }
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//------------------------------------------------------------------------------------
 // -----------  Delete Dept Function ---------------------------------------------
 const deleteDeptPrompt = [
   {
@@ -501,86 +422,59 @@ firstPrompt();
 })
 } 
 
-
 //--------Employee Updated --------------------------------------------------------------
-const updateEmployeePrompt = [
-  {
-  type: "input",
-  name: "employeetoUpdate",
-  message: "Please Enter ID number of Employee you want to Update :",
-  validate: (idInput) => {
-    // to make sure its a Number and no letters
-    if (isNaN(idInput)) {
-      console.log("Please Enter ID number of Employee you want to Update (Numbers only)");
-      return false;
-    } 
-    else {
-      return true;
-    }
-  },
-},
-{
-
-  type: "input",
-  name: "roleidtoUpdate",
-  message: "Enter the new Role ID you want to assign to this Employee :",
-  validate: (idInput) => {
-    // to make sure its a Number and no letters
-    if (isNaN(idInput)) {
-      console.log("Enter New Role ID number of Employee to Update (Numbers only)");
-      return false;
-    } 
-    else {
-      return true;
-    }
-  },
-}
-
-]  
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+var updateEmployeeRole  = () => {
+    
+  db.promise().query('SELECT employee.first_name, employee.id, roles.roleid, roles.job_title FROM employee LEFT JOIN roles ON employee.role_id = roles.roleid')
+   
+  .then(([rows]) => {
+      console.log(rows);
+  //----------
+       var employee = rows.map(({ first_name, id }) => ({
+           name: first_name,
+           value: id    
+       }));
+       var newRole = rows.map(({ roleid, job_title }) => ({
+           name: job_title,
+           value: roleid
+       }));
+  
+  inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "employeechoice",
+          message: "SELECT the Employee you want to update Role for :",
+          choices: employee
+        },
+        {
+          type: "list",
+          name: "rolechoice",
+          message: "SELECT the New Role / Title of the Employee :",
+          choices: newRole
+        }
+      ] )
 
 
-// UPDATE Customers
-// SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
-// WHERE CustomerID = 1;
-
-
-var updateEmployeeRole = () => {
-inquirer.prompt(updateEmployeePrompt).then((answer) => {    
-  console.log(answer);
-  console.log(answer.employeetoUpdate, answer.roleidtoUpdate)
-
-
-  const sql = `UPDATE employee 
-               SET role_id = ? 
-               WHERE id = ?`;
-  const params = [ answer.roleidtoUpdate, answer.employeetoUpdate ];
-  console.log("params =" + params);
-
-  db.query(sql, params, (err, result) => {
-   //  console.log(err);
-   console.table(result);
-   console.log("Employee Role Updated");
-firstPrompt();
-});
-})
-} 
+      .then(answer => {
+        
+  console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
+   
+    const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
+    const params = [ answer.employeechoice, answer.rolechoice ];
+    console.log (params);
+  
+    db.query(sql, params, (err, result) => {
+    //  console.log(err);
+      console.table(result);
+     firstPrompt();
+    
+    });
+    })
+  })
+  }
 
 
 
-
-
-// DROP TABLE IF EXISTS manager;
-
-// CREATE TABLE manager (
-//   id INTEGER AUTO_INCREMENT PRIMARY KEY,
-//   manager_name VARCHAR(30) NOT NULL
-// );
-
-
-// INSERT INTO manager ( manager_name)
-// VALUES
-//   ('Miraj'),
-//   ('Rahil');
-
-// manager_id INTEGER, 
-// FOREIGN KEY (manager_id) REFERENCES manager(id) ON DELETE CASCADE
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
