@@ -229,10 +229,10 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
   console.log (params);
 
   db.query(sql, params, (err, result) => {
-    console.log(err);
+  //  console.log(err);
     console.table(result);
-   // firstPrompt();
-   console.log(result); 
+   firstPrompt();
+  
   });
   })
 })
@@ -241,79 +241,149 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-const addEmployeePrompt = [
-  {
-    type: "text",
-    name: "firstname",
-    message: "Enter First Name of the Employee :",
-    validate: firstnameText => {
-      if(firstnameText){
-          return true;
-      } else {
-          console.log('Please Enter First Name of the Employee');
-          return false;
-      }
-    },
-  },
-  {
-    type: "text",
-    name: "lastname",
-    message: "Enter Last Name of the Employee :",
-    validate: lastnameText => {
-      if(lastnameText){
-          return true;
-      } else {
-          console.log('Please Enter Last Name of the Employee');
-          return false;
-      }
-    },
-  },
-  {
-    type: "text",
-    name: "title",
-    message: "Enter Role / Title of the Employee :",
-    validate: roleText => {
-      if(roleText){
-          return true;
-      } else {
-          console.log('Please Enter Role of the Employee');
-          return false;
-      }
-    },
-  },
-  {
-    type: "text",
-    name: "managertoreport",
-    message: "Enter manager name that Employee report to :",
-    validate: managerText => {
-      if(managerText){
-          return true;
-      } else {
-          console.log('Please Enter Manager name that Employee report to');
-          return false;
-      }
-    },
-  },
-]
-
-var addEmployee = () => {
-  inquirer.prompt(addEmployeePrompt).then((answer) => {    
-    console.log(answer);
-
-  console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Job Title = " + answer.title + ", Manager to Report = " + answer.managertoreport );
- 
-  const sql = 'INSERT INTO employee (first_name, last_name, job_title, manager_name) VALUES(?, ?, ?, ?)';
-  const params = [ answer.firstname, answer.lastname, answer.title, answer.managertoreport ];
-    console.log(params);
-
-  db.query(sql, params, (err, result) => {
-    console.log(err + "if any");
-    console.table(result);
-    console.log( "after table");
-    firstPrompt();
+var addEmployee  = () => {
+    
+  db.promise().query('SELECT roles.id, roles.job_title FROM roles')
+    .then(([rows]) => {
+      console.log(rows);
+  //----------
+      var allRoles = rows.map(({job_title, id}) => ({
+        name: job_title,
+        value: id
+        
+    }));
+   // console.log(allRoles);
+  //-------------
+  
+      inquirer.prompt(
+      [
+        {
+          type: "text",
+          name: "firstname",
+          message: "Enter First Name of the Employee :",
+          validate: firstnameText => {
+            if(firstnameText){
+                return true;
+            } else {
+                console.log('Please Enter First Name of the Employee');
+                return false;
+            }
+          },
+        },
+        {
+          type: "text",
+          name: "lastname",
+          message: "Enter Last Name of the Employee :",
+          validate: lastnameText => {
+            if(lastnameText){
+                return true;
+            } else {
+                console.log('Please Enter Last Name of the Employee');
+                return false;
+            }
+          },
+        },
+        {
+          type: "list",
+          name: "rolechoice",
+          message: "SELECT the Role / Title of the Employee :",
+          choices: allRoles
+        }
+      ] )
+        .then(answer => {
+        
+      console.log("ADDING : First Name = " + answer.firstname + ", Last Name =  " + answer.lastname + ", Role = " + answer.rolechoice );
+   
+    const sql = 'INSERT INTO employee (first_name, last_name, role_id) VALUES(?, ?, ?)';
+    const params = [ answer.firstname, answer.lastname, answer.rolechoice ];
+    console.log (params);
+  
+    db.query(sql, params, (err, result) => {
+    //  console.log(err);
+      console.table(result);
+     firstPrompt();
+    
     });
+    })
   })
-}
+  }
+
+
+
+// //////////////////////////////////////////////////////////////////////////////////
+// const addEmployeePrompt = [
+//   {
+//     type: "text",
+//     name: "firstname",
+//     message: "Enter First Name of the Employee :",
+//     validate: firstnameText => {
+//       if(firstnameText){
+//           return true;
+//       } else {
+//           console.log('Please Enter First Name of the Employee');
+//           return false;
+//       }
+//     },
+//   },
+//   {
+//     type: "text",
+//     name: "lastname",
+//     message: "Enter Last Name of the Employee :",
+//     validate: lastnameText => {
+//       if(lastnameText){
+//           return true;
+//       } else {
+//           console.log('Please Enter Last Name of the Employee');
+//           return false;
+//       }
+//     },
+//   },
+//   {
+//     type: "text",
+//     name: "title",
+//     message: "Enter Role / Title of the Employee :",
+//     validate: roleText => {
+//       if(roleText){
+//           return true;
+//       } else {
+//           console.log('Please Enter Role of the Employee');
+//           return false;
+//       }
+//     },
+//   },
+//   {
+//     type: "text",
+//     name: "managertoreport",
+//     message: "Enter manager name that Employee report to :",
+//     validate: managerText => {
+//       if(managerText){
+//           return true;
+//       } else {
+//           console.log('Please Enter Manager name that Employee report to');
+//           return false;
+//       }
+//     },
+//   },
+// ]
+
+// var addEmployee = () => {
+//   inquirer.prompt(addEmployeePrompt).then((answer) => {    
+//     console.log(answer);
+
+//   console.log("ADDING : First Name = " + answer.firstname + ", Last Name = " + answer.lastname + ", Job Title = " + answer.title + ", Manager to Report = " + answer.managertoreport );
+ 
+//   const sql = 'INSERT INTO employee (first_name, last_name, job_title, manager_name) VALUES(?, ?, ?, ?)';
+//   const params = [ answer.firstname, answer.lastname, answer.title, answer.managertoreport ];
+//     console.log(params);
+
+//   db.query(sql, params, (err, result) => {
+//     console.log(err + "if any");
+//     console.table(result);
+//     console.log( "after table");
+//     firstPrompt();
+//     });
+//   })
+// }
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 // -----------  Delete Dept Function ---------------------------------------------
 const deleteDeptPrompt = [
