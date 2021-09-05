@@ -39,25 +39,24 @@ var firstPrompt = () => {
 //----- View all Roles-------------------------------------------------------------------------------------------
 else if (answer.choice === "View all Roles"){
 
-    const sql = 'SELECT roles.job_title, roles.id, roles.salary, department.department_name FROM department LEFT JOIN roles ON roles.id = department.id'; 
-   
-  // SELECT 
-  //       roles.job_title,
-  //       roles.id, 
-  //       roles.salary, 
-  //       department.department_name, 
-  // FROM roles 
-  // LEFT JOIN roles ON 
-  //       roles.id = department.id 
+    const sql = 'SELECT roles.job_title, roles.id, roles.salary, department.department_name FROM roles LEFT JOIN department on roles.department_id = department.id'; 
 
-  //  presents with job title, role id, dept that role belongs to  and salary 
+    // 'SELECT 
+    //      roles.job_title, 
+    //      roles.id, 
+    //      roles.salary, 
+    //      department.department_name 
+    // FROM roles 
+    // LEFT JOIN department ON 
+    // roles.department_id = department.id';
+  
+    //  presents with job title, role id, dept that role belongs to  and salary 
 
      console.log(" Here is a table presenting all Roles");
 
    db.query(sql, function (err, results) {
-    //     db.query("SELECT * FROM roles", function (err, results) {
-         console.log(err);
-    console.table(results);
+     console.log(err);
+     console.table(results);
     firstPrompt();
   });
 }  
@@ -109,7 +108,7 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Add a Department"){    // done
          addDepartment();
        }
-      else if (answer.choice === "Add a Role"){
+      else if (answer.choice === "Add a Role"){          //done
          addRole();
        }
       else if (answer.choice === "Add an Employee"){
@@ -121,13 +120,13 @@ else if (answer.choice === "View all Roles"){
       else if (answer.choice === "Delete a Department"){      //done
          deleteDepartment();
       }
-      else if (answer.choice === "Delete a Role"){
+      else if (answer.choice === "Delete a Role"){           //done
          deleteRole();
        }
-      else if (answer.choice === "Delete an Employee"){
+      else if (answer.choice === "Delete an Employee"){      
          deleteEmployee();
        }
-      else if ( answer.choice === "Exit"){
+      else if ( answer.choice === "Exit"){                //done
         db.end();
       }
     })    
@@ -170,10 +169,6 @@ var addDepartment = () => {
 }
 
 // ----  Add a Role  --->>>> prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
-
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-
-
 var addRole = () => {
     
 db.promise().query('SELECT department.department_name, department.id FROM department')
@@ -236,16 +231,16 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
   db.query(sql, params, (err, result) => {
     console.log(err);
     console.table(result);
-    firstPrompt();
-    });
+   // firstPrompt();
+   console.log(result); 
+  });
   })
 })
 }
 
-
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 const addEmployeePrompt = [
   {
     type: "text",
@@ -319,7 +314,7 @@ var addEmployee = () => {
     });
   })
 }
-
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 // -----------  Delete Dept Function ---------------------------------------------
 const deleteDeptPrompt = [
   {
