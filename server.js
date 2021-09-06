@@ -1,13 +1,16 @@
 const express = require('express');
-
-const db = require('./db/connection');
-
 const app = express();
+const db = require('./db/connection');
 
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 
-//--------------------------------------------------------------------------
+// const Manager = require('./lib/Manager');
+// const Employee = require('./lib/Employee');
+// const Role = require('./lib/Roles');
+// const Department = require('./lib/Department');
+
+//----------Prompt for selections ----------------------------------------------------------------
 const prompt1 = [
   {
     type: "list",
@@ -22,7 +25,7 @@ var firstPrompt = () => {
   inquirer.prompt(prompt1).then((answer) => {    
 //    console.log(answer);
 //--------View all departments---------------------------------------------------------------------------------------    
-    if (answer.choice === "View all Departments") {
+  if (answer.choice === "View all Departments") {
       
        //  presents a formatted table showing dept names, dept ID
          console.log(" ==============   Here are all Departments ================");
@@ -34,7 +37,7 @@ var firstPrompt = () => {
         });
       } 
 //----- View all Roles-------------------------------------------------------------------------------------------
-else if (answer.choice === "View all Roles"){
+  else if (answer.choice === "View all Roles"){
 
     const sql = 'SELECT roles.job_title, roles.roleid, roles.salary, department.department_name FROM roles LEFT JOIN department on roles.department_id = department.id'; 
 
@@ -50,8 +53,8 @@ else if (answer.choice === "View all Roles"){
 
      console.log(" ============ Here is a table presenting all Roles ================= ");
 
-   db.query(sql, function (err, results) {
-   //  console.log(err);
+    db.query(sql, function (err, results) {
+    //  console.log(err);
      console.table(results);
     firstPrompt();
   });
@@ -89,7 +92,7 @@ else if (answer.choice === "View all Roles"){
         });
        }
 //--------View all Managers---------------------------------------------------------------------------------------    
-      else if (answer.choice === "View Managers") {
+    else if (answer.choice === "View Managers") {
          
         console.log(" ===============  Here is a list of Managers =============== ");
   
@@ -150,14 +153,14 @@ const addDepartmentPrompt = [
           return false;
       }
     }
-  }
-] 
+   }
+  ] 
 
 var addDepartment = () => {
   inquirer.prompt(addDepartmentPrompt).then((answer) => {    
- //   console.log(answer);
- //   console.log("ADDING : -- " + answer.name + " -- Department");
- console.log(" ========   Department Added ======== ");
+  //   console.log(answer);
+  //   console.log("ADDING : -- " + answer.name + " -- Department");
+  console.log(" ========   Department Added ======== ");
   const sql = 'INSERT INTO department (department_name) VALUES(?)';
   const params = [ answer.name ];
 
@@ -173,17 +176,17 @@ var addDepartment = () => {
 // ----  Add a Role  --->>>> prompt to enter name, salary, and dept for the role and that role is added to the database --------------------------------
 var addRole = () => {
     
-db.promise().query('SELECT department.department_name, department.id FROM department')
-  .then(([rows]) => {
- //   console.log(rows);
-//-------------
-    var departments = rows.map(({department_name, id}) => ({
+  db.promise().query('SELECT department.department_name, department.id FROM department')
+    
+      .then(([rows]) => {
+  //  console.log(rows);
+
+  var departments = rows.map(({department_name, id}) => ({
       name: department_name,
       value: id
-      
-  }));
- // console.log(departments);
-//-------------
+      }));
+  // console.log(departments);
+
 
     inquirer.prompt(
     [
@@ -224,20 +227,19 @@ db.promise().query('SELECT department.department_name, department.id FROM depart
     ] )
       .then(answer => {
       
-  //  console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.deptchoice );
-  console.log(" ========   Role Added ======== ");
-  const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
-  const params = [ answer.name, answer.salary, answer.deptchoice ];
-  // console.log (params);
+     //  console.log("ADDING : Role = " + answer.name + ", Salary = $ " + answer.salary + ", Department ID = " + answer.deptchoice );
+    console.log(" ========   Role Added ======== ");
+    const sql = 'INSERT INTO roles (job_title, salary, department_id) VALUES(?, ?, ?)';
+    const params = [ answer.name, answer.salary, answer.deptchoice ];
+    // console.log (params);
 
   db.query(sql, params, (err, result) => {
-  //  console.log(err);
-  //  console.table(result);
-   firstPrompt();
-  
-  });
-  })
-})
+    //  console.log(err);
+    //  console.table(result);
+    firstPrompt();
+    });
+   })
+ })
 }
 //--------------- Add Employee -----------------------------------------------
 // prompt to enter employee's first, last name, role and manager and that employee is added to the database --------------------
@@ -246,14 +248,13 @@ var addEmployee  = () => {
   db.promise().query('SELECT roles.roleid, roles.job_title FROM roles')
     .then(([rows]) => {
     //  console.log(rows);
-  //----------
+  
       var allRoles = rows.map(({job_title, roleid}) => ({
         name: job_title,
         value: roleid
         
     }));
    // console.log(allRoles);
-  //-------------
   
       inquirer.prompt(
       [
@@ -290,7 +291,7 @@ var addEmployee  = () => {
           choices: allRoles
         }
       ] )
-        .then(answer => {
+  .then(answer => {
         
     //  console.log("ADDING : First Name = " + answer.firstname + ", Last Name =  " + answer.lastname + ", Role = " + answer.rolechoice );
      console.log(" ========   Employee Added ======== ");
@@ -303,23 +304,23 @@ var addEmployee  = () => {
     //  console.table(result);
      firstPrompt();
     
-    });
+     });
     })
   })
   }
 //------------------------------------------------------------------------------------
 // -----------  Delete Dept Function ---------------------------------------------
 const deleteDeptPrompt = [
-  {
-  type: "input",
-  name: "idtoDelete",
-  message: "Please Enter ID number of Department you want to delete :",
-  validate: (idInput) => {
-    // to make sure its a Number and no letters
-    if (isNaN(idInput)) {
+   {
+     type: "input",
+     name: "idtoDelete",
+     message: "Please Enter ID number of Department you want to delete :",
+     validate: (idInput) => {
+      // to make sure its a Number and no letters
+      if (isNaN(idInput)) {
       console.log("Please Enter ID number (Numbers only)");
       return false;
-    } 
+      } 
     else {
       return true;
     }
@@ -406,35 +407,34 @@ const deleteRolePrompt = [
 ]  
 
 var deleteRole = () => {
-inquirer.prompt(deleteRolePrompt).then((answer) => {    
- // console.log(answer);
- // console.log(answer.roletoDelete);
+   inquirer.prompt(deleteRolePrompt).then((answer) => {    
+   // console.log(answer);
+   // console.log(answer.roletoDelete);
 
+  const sql = `DELETE FROM roles WHERE roleid = ?`;
+  const params = [ answer.roletoDelete ];
+  // console.log("params =" + params);
 
-const sql = `DELETE FROM roles WHERE roleid = ?`;
-const params = [ answer.roletoDelete ];
- // console.log("params =" + params);
-
-db.query(sql, params, (err, result) => {
-  // console.log(err);
-// console.table(result);
-console.log(" =========   Role Deleted =========== ");
-firstPrompt();
-});
-})
+  db.query(sql, params, (err, result) => {
+    // console.log(err);
+    // console.table(result);
+    console.log(" =========   Role Deleted =========== ");
+    firstPrompt();
+    });
+  })
 } 
 // --------------- Delete Employee Function ---------------------------------
 const deleteEmployeePrompt = [
   {
-  type: "input",
-  name: "employeetoDelete",
-  message: "Please Enter Employee's ID number you want to delete :",
-  validate: (idInput) => {
-    // to make sure its a Number and no letters
+     type: "input",
+     name: "employeetoDelete",
+     message: "Please Enter Employee's ID number you want to delete :",
+     validate: (idInput) => {
+        // to make sure its a Number and no letters
     if (isNaN(idInput)) {
-      console.log("Please Enter ID number of Employee (Numbers only)");
-      return false;
-    } 
+       console.log("Please Enter ID number of Employee (Numbers only)");
+       return false;
+       } 
     else {
       return true;
     }
@@ -444,30 +444,30 @@ const deleteEmployeePrompt = [
 ]  
 
 var deleteEmployee = () => {
-inquirer.prompt(deleteEmployeePrompt).then((answer) => {    
- // console.log(answer);
- // console.log(answer.employeetoDelete);
+    inquirer.prompt(deleteEmployeePrompt).then((answer) => {    
+    // console.log(answer);
+    // console.log(answer.employeetoDelete);
 
 
-const sql = `DELETE FROM employee WHERE id = ?`;
-const params = [ answer.employeetoDelete ];
-// console.log("params =" + params);
+    const sql = `DELETE FROM employee WHERE id = ?`;
+    const params = [ answer.employeetoDelete ];
+    // console.log("params =" + params);
 
-db.query(sql, params, (err, result) => {
-//  console.log(err);
-// console.table(result);
-console.log(" ======= Employee Deleted ========== ");
-firstPrompt();
-});
-})
+  db.query(sql, params, (err, result) => {
+    //  console.log(err);
+    // console.table(result);
+    console.log(" ======= Employee Deleted ========== ");
+    firstPrompt();
+     }); 
+   })
 } 
 
 //--------Update Employee Role  ------------------------------------------------------------------------------
 var updateEmployeeRole  = () => {
   
   db.promise().query('select * from employee')
-   .then(([rows]) => {
-    // console.log(rows);
+    .then(([rows]) => {
+     // console.log(rows);
 
      var employee = rows.map(({ first_name, id }) => ({
          name: first_name,
@@ -480,8 +480,8 @@ var updateEmployeeRole  = () => {
      // console.log(rows);
     
      var newRole = rows.map(({ roleid, job_title }) => ({
-      name: job_title,
-      value: roleid
+        name: job_title,
+        value: roleid
       }));   
     
       
@@ -498,21 +498,22 @@ var updateEmployeeRole  = () => {
           name: "rolechoice",
           message: "SELECT the New Role / Title of the Employee :",
           choices: newRole
-        }
-      ] )
+         }
+      ])
 
 
-      .then(answer => {
+    .then(answer => {
         
-   //  console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
-       console.log (" ======= Updated Employee Role ========== ");
-    const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
-    const params = [ answer.rolechoice, answer.employeechoice ];
-    // console.log (params);
+       //  console.log("ADDING : to Employee = " + answer.employeechoice + ", New Role =  " + answer.rolechoice );
+      console.log (" ======= Updated Employee Role ========== ");
+    
+      const sql = 'UPDATE employee SET role_id = ? WHERE id = ?';
+      const params = [ answer.rolechoice, answer.employeechoice ];
+      // console.log (params);
   
-    db.query(sql, params, (err, result) => {
-    //  console.log(err);
-     //  console.table(result);
+  db.query(sql, params, (err, result) => {
+      //  console.log(err);
+      //  console.table(result);
      firstPrompt();
     
         });
@@ -526,10 +527,10 @@ var updateEmployeeManager  = () => {
 
 
   db.promise().query('select * from employee')
-   .then(([rows]) => {
+    .then(([rows]) => {
     // console.log(rows);
 
-     var employee = rows.map(({ first_name, id }) => ({
+    var employee = rows.map(({ first_name, id }) => ({
          name: first_name,
          value: id    
        }));
@@ -541,9 +542,9 @@ var updateEmployeeManager  = () => {
      .then(([rows]) => {
      //  console.log(rows);
     
-     var newManager = rows.map(({ first_name, id }) => ({
-      name: first_name,
-      value: first_name
+    var newManager = rows.map(({ first_name, id }) => ({
+       name: first_name,
+       value: first_name
       }));   
     
       
@@ -561,26 +562,25 @@ var updateEmployeeManager  = () => {
           message: "SELECT the New Manager of the Employee from this list :",
           choices: newManager
         }
-      ] )
+      ])
 
 
-      .then(answer => {
+     .then(answer => {
         
-  // console.log("ADDING : to Employee = " + answer.employeechoice + ", New manager =  " + answer.managerchoice );
-     console.log(" ======== Updated Employee's Manager ============= ")
-    const sql = 'UPDATE employee SET manager = ? WHERE id = ?';
-    const params = [ answer.managerchoice, answer.employeechoice ];
-    // console.log (params);
+        // console.log("ADDING : to Employee = " + answer.employeechoice + ", New manager =  " + answer.managerchoice );
+        console.log(" ======== Updated Employee's Manager ============= ")
+      
+        const sql = 'UPDATE employee SET manager = ? WHERE id = ?';
+        const params = [ answer.managerchoice, answer.employeechoice ];
+       // console.log (params);
   
     db.query(sql, params, (err, result) => {
-    //  console.log(err);
-    //  console.table(result);
+       //  console.log(err);
+       //  console.table(result);
      firstPrompt();
     
-    });
-  })
-})
-
-})
-
+       });
+     }) 
+   })
+ })
 }
