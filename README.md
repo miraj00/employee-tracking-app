@@ -7,10 +7,10 @@ Employee-tracking-App is command-line based application. It uses SQL databse and
 ```
 * The requirement from the client include as below :
 ```
-![Screenshot of web page](./public/assets/images/requirements.jpg)
+![Screenshot of web page](./public/assets/images/requirements.JPG)
 
 ## Languages and other components used : 
-
+```
    * Node.js 
    * npm (node package manager) 
    * Expess.js server ( Node based web server ) 
@@ -48,16 +48,15 @@ Employee-tracking-App is command-line based application. It uses SQL databse and
  10. Note : Since we have connection.js file to connect to SQL database, we may not need to turn on SQL database.
 
  11. Once above steps are done, On Command Prompt at root directory type : " node server.js " to initiate application
-
 ```
-Demo video of How to use the application available at  : 
-
+## Demo video of How to use the application available at  : 
+```
 https://drive.google.com/file/d/1q2y0YXAkWzJ_kW2t4IjRvjmx8kyOC0tg/view
 
 ```
 ## Below is the screenshot and Deployed application of the Project as per client request ## 
 
-![Screenshot of web page](./public/assets/images/screenshot.png)
+![Screenshot of web page](./public/assets/images/screenshot.PNG)
 
 
 [Please click here to deploy application in Github](https://github.com/miraj00/employee-tracking-app)
