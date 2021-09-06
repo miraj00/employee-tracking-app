@@ -49,11 +49,15 @@ Employee-tracking-App is command-line based application. It uses SQL databse and
 
  11. Once above steps are done, On Command Prompt at root directory type : " node server.js " to initiate application
 ```
-## Demo video of How to use the application available at  : 
+## Demo video Link (inclueds Video under link as well) of How to use the application available at  : 
 ```
 https://drive.google.com/file/d/1q2y0YXAkWzJ_kW2t4IjRvjmx8kyOC0tg/view
 
 ```
+
+https://user-images.githubusercontent.com/84084583/132161438-61081242-2f1a-48f1-9fb6-e6467c4dda63.mp4
+
+
 ## Below is the screenshot and Deployed application of the Project as per client request ## 
 
 ![Screenshot of web page](./public/assets/images/screenshot.PNG)
